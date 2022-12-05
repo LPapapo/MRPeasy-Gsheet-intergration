@@ -1,0 +1,8 @@
+{
+ "compilerOptions": {
+    "lib": ["esnext"],
+    "module": "none",
+    "outFile": "output-gs/compiled.gs",
+    "strict": true
+  }
+}
