@@ -1,3 +1,14 @@
+* Requirements
+
+  
+  Npm nodejs installed
+
+
+  npm install @google/clasp -g
+
+
+  npm install typescript
+
 * For local development, you need to `git clone` this repository to your local machine. Then, to install node modules (creating a `node_modules` folder), run:
 
   ```bash
