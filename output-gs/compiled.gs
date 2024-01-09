@@ -6,7 +6,7 @@ function onOpen() {
         .addToUi();
     syncFromMRPEasy();
 }
-function call_MRP_Easy_API(counter) {
+function call_MRP_Easy_API_lots(counter) {
     var scriptProperties = PropertiesService.getScriptProperties();
     var MRP_EASY_API_KEY = scriptProperties.getProperty('MRP_EASY_API_KEY');
     var MRP_EASY_ACCESS_KEY = scriptProperties.getProperty('MRP_EASY_ACCESS_KEY');
@@ -14,14 +14,45 @@ function call_MRP_Easy_API(counter) {
     var method = 'get';
     var options = {
         'method': method,
-        'headers': { 'api_key': "".concat(MRP_EASY_API_KEY), 'access_key': "".concat(MRP_EASY_ACCESS_KEY), 'Range': 'items=' + counter, 'accept': 'application/json', 'content-type': 'application/json' }
+        'headers': {
+            'api_key': "".concat(MRP_EASY_API_KEY),
+            'access_key': "".concat(MRP_EASY_ACCESS_KEY),
+            'Range': 'items=' + counter,
+            'accept': 'application/json',
+            'content-type': 'application/json'
+        }
+    };
+    var result = UrlFetchApp.fetch(url, options);
+    return result;
+}
+function call_MRP_Easy_API_purchase_orders(counter) {
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var MRP_EASY_API_KEY = scriptProperties.getProperty('MRP_EASY_API_KEY');
+    var MRP_EASY_ACCESS_KEY = scriptProperties.getProperty('MRP_EASY_ACCESS_KEY');
+    var url = 'https://app.mrpeasy.com/rest/v1/purchase-orders';
+    var method = 'get';
+    var options = {
+        'method': method,
+        'headers': {
+            'api_key': "".concat(MRP_EASY_API_KEY),
+            'access_key': "".concat(MRP_EASY_ACCESS_KEY),
+            'Range': 'items=' + counter,
+            'accept': 'application/json',
+            'content-type': 'application/json'
+        }
     };
     var result = UrlFetchApp.fetch(url, options);
     return result;
 }
 function syncFromMRPEasy() {
+    var lotsOutput = processResultLots();
+    var purchaseOrdersOutput = processResultPurchaseOrders();
+    writeToSheet('Stocks', lotsOutput, { clearSheet: true });
+    writeToSheet('PurchaseOrders', purchaseOrdersOutput, { clearSheet: true });
+}
+function processResultLots() {
     var itemCounter = 0;
-    var result = call_MRP_Easy_API(itemCounter);
+    var result = call_MRP_Easy_API_lots(itemCounter);
     var output = [];
     do {
         if (result.getResponseCode() === 206 || result.getResponseCode() === 200) {
@@ -39,10 +70,35 @@ function syncFromMRPEasy() {
                 output.push(row);
             }
             itemCounter = itemCounter + 100;
-            result = call_MRP_Easy_API(itemCounter);
+            result = call_MRP_Easy_API_lots(itemCounter);
         }
     } while (JSON.parse(result.getContentText()).length != 0);
-    writeToSheet('Stocks', output, { clearSheet: true });
+    return output;
+}
+function processResultPurchaseOrders() {
+    var itemCounter = 0;
+    var result = call_MRP_Easy_API_purchase_orders(itemCounter);
+    var output = [];
+    do {
+        if (result.getResponseCode() === 206 || result.getResponseCode() === 200) {
+            var resultText = result.getContentText();
+            var parsedRecords = parseTableRecords(resultText);
+            if (output.length === 0)
+                output = [processColumns(parsedRecords.columns)];
+            for (var _i = 0, _a = parsedRecords.data; _i < _a.length; _i++) {
+                var entry = _a[_i];
+                var row = [];
+                for (var _b = 0, _c = parsedRecords.columns; _b < _c.length; _b++) {
+                    var column = _c[_b];
+                    row.push(entry[column]);
+                }
+                output.push(row);
+            }
+            itemCounter = itemCounter + 100;
+            result = call_MRP_Easy_API_purchase_orders(itemCounter);
+        }
+    } while (JSON.parse(result.getContentText()).length != 0);
+    return output;
 }
 function parseTableRecords(resultText) {
     var resultObj = JSON.parse(resultText);
