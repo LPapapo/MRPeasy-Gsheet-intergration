@@ -24,7 +24,7 @@
 * To test your changes, build the bundle and push to the GAS project by running:
 
   ```bash
-  $ npm run build
+  
   $ npm run push
   ```
 
