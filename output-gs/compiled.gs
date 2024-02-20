@@ -117,58 +117,58 @@ function parseTableRecords(resultText) {
 }
 function iterateObject(lot, obj, parsedTableRecords) {
     for (var _i = 0, _a = Object.keys(lot); _i < _a.length; _i++) {
-        var columnn = _a[_i];
-        lot[columnn] = formatDates(lot, columnn);
-        lot[columnn] = translateStatus(lot, columnn);
-        if (lot[columnn] instanceof Array) {
-            for (var _b = 0, _c = lot[columnn]; _b < _c.length; _b++) {
+        var column = _a[_i];
+        lot[column] = formatDates(lot, column);
+        lot[column] = translateStatus(lot, column);
+        if (lot[column] instanceof Array) {
+            for (var _b = 0, _c = lot[column]; _b < _c.length; _b++) {
                 var inner = _c[_b];
                 iterateObject(inner, obj, parsedTableRecords);
             }
         }
         else {
-            obj[columnn] = lot[columnn];
-            if (!parsedTableRecords.columns.includes(columnn)) {
-                parsedTableRecords.columns.push(columnn);
+            obj[column] = lot[column];
+            if (!parsedTableRecords.columns.includes(column)) {
+                parsedTableRecords.columns.push(column);
             }
         }
     }
 }
-function convertUnixTimestampToDate(lot, columnn) {
+function convertUnixTimestampToDate(lot, column) {
     var original_date = '';
-    if (lot[columnn] && lot[columnn] !== '') {
-        var todate = new Date(parseInt(lot[columnn]) * 1000).getDate();
-        var tomonth = new Date(parseInt(lot[columnn]) * 1000).getMonth() + 1;
-        var toyear = new Date(parseInt(lot[columnn]) * 1000).getFullYear();
+    if (lot[column] && lot[column] !== '') {
+        var todate = new Date(parseInt(lot[column]) * 1000).getDate();
+        var tomonth = new Date(parseInt(lot[column]) * 1000).getMonth() + 1;
+        var toyear = new Date(parseInt(lot[column]) * 1000).getFullYear();
         original_date = tomonth + '/' + todate + '/' + toyear;
     }
     return original_date;
 }
-function formatDates(lot, columnn) {
-    if (columnn === 'created' || columnn === 'available_from' || columnn === 'custom_16099') {
-        return convertUnixTimestampToDate(lot, columnn);
+function formatDates(lot, column) {
+    if (column === 'created' || column === 'available_from' || column === 'custom_16099' || column === 'expected_date' || column === 'arrival_date' || column === 'order_date' || column === 'custom_16953' || column === 'custom_19713' || column === 'custom_17536') {
+        return convertUnixTimestampToDate(lot, column);
     }
-    return lot[columnn];
+    return lot[column];
 }
-function translateStatus(lot, columnn) {
-    if (columnn === 'status') {
-        if (lot[columnn] === '10') {
+function translateStatus(lot, column) {
+    if (column === 'status') {
+        if (lot[column] === '10') {
             return 'Planned';
         }
-        if (lot[columnn] === '15') {
+        if (lot[column] === '15') {
             return 'On hold';
         }
-        if (lot[columnn] === '20') {
+        if (lot[column] === '20') {
             return 'Received';
         }
-        if (lot[columnn] === '25') {
+        if (lot[column] === '25') {
             return 'Rejected';
         }
-        if (lot[columnn] === '30') {
+        if (lot[column] === '30') {
             return 'Cancelled';
         }
     }
-    return lot[columnn];
+    return lot[column];
 }
 function processColumns(parsedColumns) {
     var filteredColumns = [];

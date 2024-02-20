@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc -p .",
+    "push": "npm run build && clasp push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

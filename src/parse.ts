@@ -22,75 +22,75 @@ function iterateObject(lot: any, obj: { [x: string]: string },
 		data: { [x: string]: string }[]
 	}) {
 
-	for (let columnn of Object.keys(lot)) {
+	for (let column of Object.keys(lot)) {
 
-		lot[columnn] = formatDates(lot, columnn)
-		lot[columnn] = translateStatus(lot, columnn)
+		lot[column] = formatDates(lot, column)
+		lot[column] = translateStatus(lot, column)
 
-		if (lot[columnn] instanceof Array) {
+		if (lot[column] instanceof Array) {
 
-			for (const inner of lot[columnn]) {
+			for (const inner of lot[column]) {
 				iterateObject(inner, obj, parsedTableRecords)
 			}
 
 		} else {
-			obj[columnn] = lot[columnn]
-			if (!parsedTableRecords.columns.includes(columnn)) {
-				parsedTableRecords.columns.push(columnn)
+			obj[column] = lot[column]
+			if (!parsedTableRecords.columns.includes(column)) {
+				parsedTableRecords.columns.push(column)
 			}
 		}
 	}
 }
 
-function convertUnixTimestampToDate(lot: any, columnn: string) {
+function convertUnixTimestampToDate(lot: any, column: string) {
 
 	let original_date = ''
 
-	if (lot[columnn] && lot[columnn] !== '') {
-		let todate = new Date(parseInt(lot[columnn]) * 1000).getDate();
-		let tomonth = new Date(parseInt(lot[columnn]) * 1000).getMonth() + 1;
-		let toyear = new Date(parseInt(lot[columnn]) * 1000).getFullYear();
+	if (lot[column] && lot[column] !== '') {
+		let todate = new Date(parseInt(lot[column]) * 1000).getDate();
+		let tomonth = new Date(parseInt(lot[column]) * 1000).getMonth() + 1;
+		let toyear = new Date(parseInt(lot[column]) * 1000).getFullYear();
 		original_date = tomonth + '/' + todate + '/' + toyear;
 	}
 
 	return original_date
 }
 
-function formatDates(lot: any, columnn: string) {
-	if (columnn === 'created' || columnn === 'available_from' || columnn === 'custom_16099') {
+function formatDates(lot: any, column: string) {
+	if (column === 'created' || column === 'available_from' || column === 'custom_16099' || column === 'expected_date' || column === 'arrival_date' || column === 'order_date' || column === 'custom_16953' || column === 'custom_19713' || column === 'custom_17536') {
 
-		return convertUnixTimestampToDate(lot, columnn)
+		return convertUnixTimestampToDate(lot, column)
 
 	}
 
-	return lot[columnn]
+	return lot[column]
 }
 
 
-function translateStatus(lot: any, columnn: string) {
+function translateStatus(lot: any, column: string) {
 
-	if (columnn === 'status') {
-		if (lot[columnn] === '10') {
+	if (column === 'status') {
+		if (lot[column] === '10') {
 			return 'Planned'
 		}
 
-		if (lot[columnn] === '15') {
+		if (lot[column] === '15') {
 			return 'On hold'
 		}
 
-		if (lot[columnn] === '20') {
+		if (lot[column] === '20') {
 			return 'Received'
 		}
 
-		if (lot[columnn] === '25') {
+		if (lot[column] === '25') {
 			return 'Rejected'
 		}
-		if (lot[columnn] === '30') {
+		if (lot[column] === '30') {
 			return 'Cancelled'
 		}
 	}
 
-	return lot[columnn]
+	return lot[column]
 }
 
 function processColumns(parsedColumns: string[]) {
