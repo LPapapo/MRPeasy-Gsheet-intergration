@@ -12,6 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@types/google-apps-script": "^1.0.56",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   }
 }
